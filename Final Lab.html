@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LAB2 Avneet</title>
+  </head>
+  <body>
+    <button id="all">All Names</button> <br /><br />
+    <button id="health">Health Issues</button>
+    <input type="number" id="input" placeholder="Enter health issue number" />
+    <br /><br />
+    <div>
+      <input
+        type="radio"
+        id="imperial"
+        name="weightUnit"
+        value="imperial"
+        checked
+      />
+      <label for="imperial">Imperial</label>
+      <input type="radio" id="metric" name="weightUnit" value="metric" />
+      <label for="metric">Metric</label>
+      <button id="weight">Weight</button> <br /><br />
+    </div>
+
+    <button id="intelligence">Intelligence</button><br /><br />
+    <button id="averageIntelligence">Average Intelligence</button> <br /><br />
+    <button id="averageIntelligenceChildFriendly">Average Intelligence for Child Friendly = 4</button>
+    <br /><br />
+    <div id="output"></div>
+
+    <script>
+     
+      const apiURL = "https://api.thecatapi.com/v1/breeds";
+
+   
+      function fetchData(callback) {
+        fetch(apiURL)
+          .then((response) => response.json())
+          .then((data) => callback(data))
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+            document.getElementById("output").textContent =
+              "Error fetching data.";
+          });
+      }
+
+     
+      document.getElementById("all").addEventListener("click", () => {
+        fetchData((data) => {
+          let output = "";
+          data.forEach((cat) => {
+            output += `${cat.name}<br>`;
+          });
+          document.getElementById("output").innerHTML = output;
+        });
+      });
+
+     
+      document.getElementById("health").addEventListener("click", () => {
+        const input = document.getElementById("input").value;
+        fetchData((data) => {
+          let output = "";
+          data.forEach((cat) => {
+            if (cat.health_issues == input) {
+              output += `${cat.name}<br>`;
+            }
+          });
+          document.getElementById("output").innerHTML = output;
+        });
+      });
+
+     
+     
+
+      document.getElementById("intelligence").addEventListener("click", () => {
+        fetchData((data) => {
+          let output = "";
+          data.forEach((cat) => {
+            output += `Name: ${cat.name}, Intelligence: ${cat.intelligence}, Child Friendly: ${cat.child_friendly}<br>`;
+          });
+          document.getElementById("output").innerHTML = output;
+        });
+      });
+
+   
+      document
+        .getElementById("averageIntelligence")
+        .addEventListener("click", () => {
+          fetchData((data) => {
+            let sum = 0;
+            data.forEach((cat) => {
+              sum += cat.intelligence;
+            });
+            const average = sum / data.length;
+            document.getElementById(
+              "output"
+            ).innerHTML = `Average Intelligence: ${average.toFixed(2)}`;
+          });
+        });
+
+      document
+        .getElementById("averageIntelligenceChildFriendly")
+        .addEventListener("click", () => {
+          fetchData((data) => {
+            let sum = 0;
+            let count = 0;
+            data.forEach((cat) => {
+              if (cat.child_friendly >= 4) {
+                sum += cat.intelligence;
+                count++;
+              }
+            });
+            const average = sum / count;
+            document.getElementById(
+              "output"
+            ).innerHTML = `Average Intelligence for Child Friendly Cats: ${average.toFixed(
+              2
+            )}`;
+          });
+        });
+    </script>
+  </body>
+</html>
